@@ -1,0 +1,124 @@
+create DATABASE AirBnb_DB
+
+use AirBnb_DB
+
+-- Tạo bảng ViTri
+CREATE TABLE ViTri (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    ten_vi_tri VARCHAR(255),
+    tinh_thanh VARCHAR(255),
+    quoc_gia VARCHAR(255),
+    hinh_anh VARCHAR(255)
+);
+
+-- Tạo bảng Phong
+CREATE TABLE Phong (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    ten_phong VARCHAR(255),
+    khach INT,
+    phong_ngu INT,
+    giuong INT,
+    phong_tam INT,
+    mo_ta TEXT,
+    gia_tien INT,
+    may_giat BOOLEAN,
+    ban_la BOOLEAN,
+    tivi BOOLEAN,
+    dieu_hoa BOOLEAN,
+    wifi BOOLEAN,
+    bep BOOLEAN,
+    do_xe BOOLEAN,
+    ho_boi BOOLEAN,
+    ban_ui BOOLEAN,
+    hinh_anh VARCHAR(255),
+    vi_tri_id INT,
+    FOREIGN KEY (vi_tri_id) REFERENCES ViTri(id) ON DELETE CASCADE
+);
+
+-- Tạo bảng NguoiDung
+CREATE TABLE NguoiDung (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    email VARCHAR(255) UNIQUE,
+    pass_word VARCHAR(255),
+    phone VARCHAR(255),
+    birth_day VARCHAR(255),
+    gender VARCHAR(50),
+    role VARCHAR(50)
+);
+-- Set role khi insert nguoiDung mới
+CREATE TRIGGER set_default_role
+BEFORE INSERT ON NguoiDung
+FOR EACH ROW
+BEGIN
+    IF NEW.role IS NULL THEN
+        SET NEW.role = 'user';  
+    END IF;
+END 
+-- Tạo bảng DatPhong
+CREATE TABLE DatPhong (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    ma_phong INT,
+    ngay_den VARCHAR(255),
+    ngay_di VARCHAR(255),
+    so_luong_khach INT,
+    ma_nguoi_dat INT,
+    FOREIGN KEY (ma_phong) REFERENCES Phong(id) ON DELETE CASCADE,
+    FOREIGN KEY (ma_nguoi_dat) REFERENCES NguoiDung(id) ON DELETE CASCADE
+);
+
+-- Tạo bảng BinhLuan
+CREATE TABLE BinhLuan (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    ma_cong_viec INT,
+    ma_nguoi_binh_luan INT,
+    ngay_binh_luan VARCHAR(255),
+    noi_dung TEXT,
+    sao_binh_luan INT,
+    FOREIGN KEY (ma_cong_viec) REFERENCES Phong(id) ON DELETE CASCADE,
+    FOREIGN KEY (ma_nguoi_binh_luan) REFERENCES NguoiDung(id) ON DELETE CASCADE
+);
+--------------------------------------Value------------------------------------------
+
+INSERT INTO ViTri (ten_vi_tri, tinh_thanh, quoc_gia, hinh_anh) VALUES
+('Quận 1', 'Hồ Chí Minh', 'Việt Nam', 'q1_hcm.jpg'),
+('Phố Cổ', 'Hà Nội', 'Việt Nam', 'phoco_hn.jpg'),
+('Bãi Cháy', 'Quảng Ninh', 'Việt Nam', 'baichay_qn.jpg'),
+('Mỹ Đình', 'Hà Nội', 'Việt Nam', 'mydinh_hn.jpg');
+
+
+INSERT INTO Phong (ten_phong, khach, phong_ngu, giuong, phong_tam, mo_ta, gia_tien, may_giat, ban_la, tivi, dieu_hoa, wifi, bep, do_xe, ho_boi, ban_ui, hinh_anh, vi_tri_id) VALUES
+('Deluxe City View', 2, 1, 1, 1, 'Phòng có view thành phố, đầy đủ tiện nghi.', 1500000, 1, 1, 1, 1, 1, 1, 1, 0, 1, 'deluxe_city.jpg', 1),
+('Standard Room', 2, 1, 1, 1, 'Phòng tiêu chuẩn, phù hợp cho cặp đôi.', 1200000, 0, 0, 1, 1, 1, 0, 1, 0,1,'standard.jpg', 2),
+('Family Suite', 4, 2, 2, 2, 'Phòng dành cho gia đình với không gian rộng rãi.', 3000000, 1, 1, 1, 1, 1, 1, 1, 1,1, 'family_suite.jpg', 3),
+('Luxury Villa', 6, 3, 4, 3, 'Biệt thự sang trọng, gần bãi biển.', 5000000, 1, 1, 1, 1, 1, 1, 1, 1,1, 'luxury_villa.jpg', 4)
+
+
+
+INSERT INTO NguoiDung (name, email, pass_word, phone, birth_day, gender, role) VALUES
+('Nguyễn Văn An', 'nguyenvana@gmail.com', '123456', '0987654321', '1990-01-01', 'Nam', 'admin'),
+('Trần Thị Bảo', 'tranthib@gmail.com', 'abcdef', '0987654322', '1992-05-15', 'Nữ', 'user'),
+('Lê Văn Chung', 'levanc@gmail.com', '123abc', '0987654323', '1985-08-10', 'Nam', 'user'),
+('Phạm Thị Diễm', 'phamthid@gmail.com', 'abc123', '0987654324', '1995-12-25', 'Nữ', 'user');
+
+
+INSERT INTO DatPhong (ma_phong, ngay_den, ngay_di, so_luong_khach, ma_nguoi_dat) VALUES
+(4, '2024-12-01 14:00:00', '2024-12-03 12:00:00', 2, 2),
+(5, '2024-12-10 14:00:00', '2024-12-15 12:00:00', 4, 3),
+(3, '2024-12-05 14:00:00', '2024-12-06 12:00:00', 2, 1),
+(6, '2024-12-20 14:00:00', '2024-12-25 12:00:00', 6, 4);
+
+INSERT INTO BinhLuan (ma_cong_viec, ma_nguoi_binh_luan, ngay_binh_luan, noi_dung, sao_binh_luan) VALUES
+(3, 2, '2024-12-04 10:00:00', 'Phòng sạch sẽ, nhân viên thân thiện.', 5),
+(4, 3, '2024-12-16 18:00:00', 'Phòng rộng rãi, rất phù hợp cho gia đình.', 4),
+(5, 1, '2024-12-06 08:30:00', 'Dịch vụ ổn, nhưng cần cải thiện wifi.', 3),
+(6, 4, '2024-12-26 15:45:00', 'Trải nghiệm tuyệt vời, sẽ quay lại lần sau.', 5);
+
+
+---------------------------------------------------------------------------
+
+SELECT * FROM ViTri
+
+SELECT * FROM Phong
+
+DESCRIBE Phong;
